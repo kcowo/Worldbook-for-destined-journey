@@ -9,7 +9,7 @@
 - Node.js >= 22
 - Git
 
-## <span id="update">如何保证本地仓库与远程仓库同步更新</span>
+## 如何保证本地仓库与远程仓库同步更新
 
 这里是关于别人更新世界书并推送至仓库后，你该怎么更新世界书的处理方法。
 
@@ -22,8 +22,10 @@
 如果出现冲突：
 
 1. Git 会停下来，提示你哪些文件有冲突
-  用编辑器打开文件，手动解决冲突
-  冲突内容会是这样：
+
+用编辑器打开文件，手动解决冲突
+
+冲突内容会是这样：
 
   ```txt
   <<<<<<< HEAD
@@ -40,10 +42,11 @@
   git rebase --continue
   ```
 
-  如果还有冲突，就重复上面的步骤
-  直到 rebase 成功结束
+如果还有冲突，就重复上面的步骤
+  
+直到 rebase 成功结束
 
-## How to use?（怎么用？）
+## 第一次使用？
 
 1. 下载 Git 和 NodeJS 并安装，教程指路：[点击这里](https://stagedog.github.io/%E9%9D%92%E7%A9%BA%E8%8E%89/%E5%B7%A5%E5%85%B7%E7%BB%8F%E9%AA%8C/%E5%AE%9E%E6%97%B6%E7%BC%96%E5%86%99%E5%89%8D%E7%AB%AF%E7%95%8C%E9%9D%A2%E6%88%96%E8%84%9A%E6%9C%AC/%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87/)
 
@@ -93,6 +96,8 @@ git clone https://github.com/Hilothea/Worldbook-for-destined-journey.git
 
 之后你便可在本地编辑器中编写世界书了
 
+## 同步脚本常用命令
+
 ### 提取酒馆世界书
 
 > 执行这个操作前，请保证你酒馆世界书内容比本仓库中的世界书内容更新
@@ -108,6 +113,7 @@ node tavern_sync.mjs pull 命定之诗
 `命定之诗.yaml` 配置文件中是世界书的条目列表，对应酒馆世界书设置为`自定义`排序后的显示结果
 
 每个`-`块即对应一个世界书条目，所以你可以十分轻松地进行条目的新建、删除、修改、排序
+
 [详细解释](https://stagedog.github.io/%E9%9D%92%E7%A9%BA%E8%8E%89/%E5%B7%A5%E5%85%B7%E7%BB%8F%E9%AA%8C/%E5%AE%9E%E6%97%B6%E7%BC%96%E5%86%99%E8%A7%92%E8%89%B2%E5%8D%A1%E3%80%81%E4%B8%96%E7%95%8C%E4%B9%A6%E6%88%96%E9%A2%84%E8%AE%BE/%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/#id4)
 
 #### 同步修改结果到酒馆
@@ -140,7 +146,7 @@ git commit -m "你对这次更新的简要描述"
 git push origin main
 ```
 
-如果遇到冲突，参考上面的 <a href="#update">如何保证本地仓库与远程仓库同步更新</a>
+如果遇到冲突，参考上面的 [如何保证本地仓库与远程仓库同步更新](https://github.com/Hilothea/Worldbook-for-destined-journey/edit/main/README.md#%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93%E4%B8%8E%E8%BF%9C%E7%A8%8B%E4%BB%93%E5%BA%93%E5%90%8C%E6%AD%A5%E6%9B%B4%E6%96%B0)
 
 ## 编辑器选择
 
