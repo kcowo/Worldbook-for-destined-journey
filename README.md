@@ -34,9 +34,10 @@ node tavern_sync.mjs
 配置文件不存在，已自动生成在 '当前完整目录路径\tavern_sync.yaml'，请填写配置文件后重新运行
 ```
 
-5. 在 `tavern_sync.yaml` 配置文件的同级目录下创建一个名为世界书的文件夹，然后依次运行如下命令:
+5. 在 `tavern_sync.yaml` 配置文件的文件夹下打开终端/命令行，依次运行如下命令:
 
 ```bash
+mkdir 世界书
 cd ./世界书/
 git clone https://github.com/Hilothea/Worldbook-for-destined-journey.git
 ```
