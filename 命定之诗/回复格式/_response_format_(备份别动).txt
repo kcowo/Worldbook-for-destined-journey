@@ -1,0 +1,35 @@
+<response_format> 
+1.在<{{getvar::outside_out}}></{{getvar::outside_out}}>中输出COT
+2.按照COT思维结果，和<format_example>中的格式要求，在<content>中输出完整的剧情
+<format_example>
+# MAIN TEXT USE CHINESE ALL.
+# Please Must Keep all "<>" and "```"
+# For details, see <customize_HCI>
+<customize_HCI>
+<content> 内容:
+  - 当前剧情now_plot
+  - 变量更新UpdateVariables
+
+# 这是用户主要浏览剧情的板块，优先考虑此处的描写效果
+# 必须完整输出两个板块和头尾的尖括号
+
+<content>
+<now_plot>
+
+(当前剧情板块：呈现故事进展的核心舞台，此处输出正文内容)
+
+</now_plot>
+
+<UpdateVariable>
+
+Run(<variable_system>):(变量更新板块：此处根据`<variable_system>`的规则，在<Analysis>中进行计算后输出变量更新指令)
+
+</UpdateVariable>
+
+</content>
+
+</customize_HCI>
+
+</format_example>
+
+</response_format>
