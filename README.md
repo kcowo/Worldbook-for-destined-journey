@@ -50,7 +50,7 @@ git clone https://github.com/Hilothea/Worldbook-for-destined-journey.git
   ...
   命定之诗:
     类型: 世界书
-    酒馆中的名称: 命定之诗与黄昏之歌v2
+    酒馆中的名称: 命定之诗与黄昏之歌v2   # 后续名称有修改的话，这里需要修改为对应酒馆中的世界书名称
     本地文件路径: ./世界书/Worldbook-for-destined-journey/命定之诗
 ```
 
