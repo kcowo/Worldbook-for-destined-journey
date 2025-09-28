@@ -1,0 +1,1043 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+ <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>冒险状态</title>
+  <style>
+   /* --- 基础样式 --- */
+   body {
+    font-family: serif; /* 使用默认衬线字体 */
+    background-color: #f5efe6;
+    color: #4a3b31;
+    margin: 0;
+    padding: 15px;
+    background-image: linear-gradient(to bottom, #fdfbf7, #f6f1e8); /* 使用CSS渐变替代图片 */
+    background-size: cover;
+    background-attachment: fixed;
+   }
+
+   /* --- 主容器样式 --- */
+   .status-scroll {
+    border: 2px solid #785a4e;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: rgba(240, 230, 210, 0.85);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25), inset 0 0 10px rgba(0, 0, 0, 0.05);
+    max-width: 900px;
+    margin: auto;
+    position: relative;
+    overflow: hidden;
+   }
+
+   /* --- 顶部信息框 (时间和地点) --- */
+   .time-location-box {
+    background-color: #e8ddcb;
+    padding: 10px 15px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    border: 1px solid #c6b8a5;
+    text-align: left;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+   }
+   .time-location-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+   }
+
+   /* --- 通用数值样式 --- */
+   .value-main {
+    font-weight: 500;
+    font-family: 'Courier New', monospace; /* 为数值保留等宽字体 */
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.15), 0 0 5px rgba(255, 255, 255, 0.3);
+   }
+
+   /* --- 折叠面板 (details/summary) 基础样式 --- */
+   details.section,
+   details.sub-section,
+   details.task-entry,
+   details.skill-entry,
+   details.destiny-target,
+   details.inventory-item-entry,
+   details.equipment-entry {
+    margin-bottom: 6px;
+    border: 1px solid #d3c5b3;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+   }
+   details.section:hover,
+   details.sub-section:hover,
+   details.task-entry:hover,
+   details.skill-entry:hover,
+   details.destiny-target:hover,
+   details.inventory-item-entry:hover,
+   details.equipment-entry:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+   }
+
+   /* --- 折叠面板标题 (summary) --- */
+   details > summary {
+    font-weight: 700;
+    color: #5d4037;
+    background-color: #d7c8b6;
+    padding: 5px 15px;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #c6b8a5;
+    text-align: left;
+    transition: background-color 0.2s ease, color 0.2s ease;
+   }
+   details > summary::-webkit-details-marker {
+    display: none;
+   }
+   details > summary:hover {
+    background-color: #cbb8a5;
+    color: #4a3b31;
+   }
+   details[open] > summary {
+    background-color: #bfa996;
+    border-bottom-color: #a39281;
+   }
+
+   /* --- 折叠面板标题左侧的发光星星图标 --- */
+   details > summary::before {
+    content: '✦';
+    font-size: 1.1em;
+    color: #a39281;
+    text-shadow: none;
+    margin-right: 12px;
+    flex-shrink: 0;
+    transform-origin: center center;
+    transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55), color 0.4s ease, text-shadow 0.4s ease;
+   }
+   details[open] > summary::before {
+    transform: rotate(360deg);
+    color: #f7d75a;
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.8), 0 0 6px #f7d75a, 0 0 10px #e5a50a;
+   }
+
+   /* --- 折叠面板右侧的折叠箭头 --- */
+   .arrow-toggle {
+    transition: transform 0.2s ease-in-out;
+    font-size: 0.8em;
+    padding-left: 5px;
+    margin-left: auto;
+   }
+   details[open] > summary .arrow-toggle {
+    transform: rotate(90deg);
+   }
+
+   /* --- 折叠面板内容区域 --- */
+   .section-content,
+   .sub-section-content,
+   .task-content,
+   .skill-description,
+   .destiny-target-content,
+   .inventory-item-details,
+   .equipment-description {
+    padding: 15px;
+    background-color: rgba(253, 250, 245, 0.9);
+    text-align: left;
+    font-size: 0.9em;
+    transition: background-color 0.2s ease, padding 0.2s ease, box-shadow 0.2s ease;
+   }
+   .skill-description,
+   .passive-skill-item,
+   .equipment-item {
+    padding-top: 5px;
+    padding-bottom: 5px;
+   }
+   .inventory-item-details {
+    padding: 10px 15px;
+   }
+
+   /* --- 内容区域通用样式 --- */
+   .property,
+   .inventory-category,
+   .currency-item {
+    margin-bottom: 8px;
+    line-height: 1.6;
+   }
+   .property-name,
+   .inventory-category p:first-child {
+    font-weight: bold;
+    color: #6a514d;
+    text-shadow: 0 0 1px rgba(0, 0, 0, 0.08);
+   }
+   .passive-skill-description,
+   .equipment-item .item-desc,
+   .title-effect {
+    font-size: 0.85em;
+    font-style: italic;
+    color: #7a655d;
+    padding-left: 10px;
+    margin-top: 2px;
+   }
+   .currency-item {
+    padding-left: 15px;
+   }
+
+   /* --- 进度条样式 --- */
+   .progress-bar-container {
+    background-color: #c8bbaf;
+    border-radius: 9px;
+    height: 18px;
+    margin-top: 4px;
+    margin-bottom: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.2);
+   }
+   .progress-bar-value {
+    height: 100%;
+    width: 0%;
+    transition: width 0.8s ease-out;
+    border-radius: 9px;
+    text-align: center;
+    color: white;
+    font-size: 0.7em;
+    line-height: 18px;
+    background-image: linear-gradient(to bottom, rgba(255,255,255,0.15), rgba(0,0,0,0.1));
+    box-shadow: inset 0 -1px 3px rgba(0,0,0,0.1);
+   }
+
+   /* --- 分隔线样式 --- */
+   .thin-divider {
+    border: 0;
+    margin: 10px 0;
+    background: transparent url("data:image/svg+xml,%3Csvg width='100%25' height='1' viewBox='0 0 100 1' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cline x1='0' y1='0.5' x2='100' y2='0.5' stroke='%23B3A291' stroke-dasharray='3 3'/%3E%3C/svg%3E") repeat-x center;
+    border-top: none;
+    height: 1px;
+   }
+
+   /* --- 特定区域微调 --- */
+   .bonds-skill-section {
+    margin-top: 10px;
+   }
+
+   /* --- 登神长阶专属样式 --- */
+   .step-level-req {
+    font-size: 0.8em;
+    color: #7a655d;
+    font-style: italic;
+    margin-left: 15px;
+   }
+   .step-item {
+     margin-bottom: 5px;
+     line-height: 1.6;
+   }
+   .item-name {
+     font-weight: bold;
+     color: #6d4c41;
+   }
+   .item-desc {
+     font-size: 0.9em;
+     font-style: italic;
+     color: #7a655d;
+     margin-left: 20px;
+     display: block;
+   }
+   .empty-slot {
+     color: #9e9e9e;
+     font-style: italic;
+   }
+   .god-tier-grid {
+     display: grid;
+     grid-template-columns: 1fr 1fr;
+     gap: 20px;
+   }
+   details.sub-section.locked > summary {
+    background-color: #e8e4e0;
+    color: #b5aaa2;
+    cursor: not-allowed;
+   }
+   details.sub-section.locked > summary::before {
+    content: '🔒';
+    color: #b5aaa2;
+   }
+
+
+   /* --- 新闻版块标题样式 --- */
+   .news-headline {
+    font-weight: 700;
+   }
+   .news-gold-lion {
+    color: #b9892d;
+   }
+   .news-tavern {
+    color: #6d4c41;
+   }
+   .news-tea-party {
+    color: #c2185b;
+   }
+
+   /* --- 隐藏元素的通用类 --- */
+   .hidden {
+    display: none !important;
+   }
+
+   /* --- 即时状态列表样式 --- */
+   .instant-status-item {
+    margin-left: 15px;
+    font-size: 0.9em;
+    color: #4a3b31;
+    line-height: 1.5;
+    white-space: pre-wrap;
+   }
+   .instant-status-item span.status-name {
+    font-weight: bold;
+    color: #6a514d;
+   }
+
+   /* --- 布局网格 (Grid) --- */
+   .status-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 20px;
+    align-items: start;
+   }
+   .status-grid-left,
+   .status-grid-right {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+   }
+   .vertical-divider {
+    width: 1px;
+    background-color: #d3c5b3;
+    align-self: stretch;
+    margin: 0 5px;
+    background: transparent url("data:image/svg+xml,%3Csvg width='1' height='100%25' viewBox='0 0 1 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cline x1='0.5' y1='0' x2='0.5' y2='100' stroke='%23D3C5B3' stroke-dasharray='3 3'/%3E%3C/svg%3E") repeat-y center;
+   }
+
+   /* --- 交互元素 (按钮) --- */
+   .action-button {
+    background-color: #8d6e63;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: sans-serif; /* 使用默认无衬线字体 */
+    font-size: 0.9em;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s ease;
+   }
+   .action-button:hover {
+    background-color: #6d4c41;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+   }
+   .action-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+   }
+
+   @media (max-width: 768px) {
+    .status-grid {
+     grid-template-columns: 1fr;
+     gap: 10px;
+    }
+    .vertical-divider {
+     display: none;
+    }
+    .status-grid-right {
+     border-top: 1px solid #d3c5b3;
+     padding-top: 10px;
+    }
+   }
+
+   /* --- 折叠栏标题中间的动态信息样式 --- */
+   .summary-details {
+    margin-left: auto;
+    padding-right: 15px;
+    font-family: 'Courier New', monospace; /* 为数值保留等宽字体 */
+    font-weight: 500;
+    font-size: 0.8em;
+    color: #6a514d;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 1px rgba(0, 0, 0, 0.05);
+    align-self: center;
+   }
+
+   /* --- [新增] 背包物品数量角标样式 --- */
+   .item-count-badge {
+    margin-left: 8px;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #fdfbf7;
+    background-color: #785a4e;
+    padding: 2px 6px;
+    border-radius: 10px;
+    line-height: 1;
+    vertical-align: middle;
+   }
+  </style>
+ </head>
+ <body>
+  <!-- 主容器 -->
+  <div class="status-scroll">
+   <!-- 时间和地点 -->
+   <div class="time-location-box">
+    <p>⏳️ 时间: <span id="world-time" class="value-main"></span></p>
+    <p>📍 地点: <span id="world-location" class="value-main"></span></p>
+   </div>
+
+   <!-- 登神长阶 -->
+   <details class="section" id="ascension-section">
+    <summary>♾️ 登神长阶 <span class="summary-details" id="ascension-summary-details"></span><span class="arrow-toggle">▼</span></summary>
+    <div class="section-content">
+     <!-- 要素 -->
+     <details class="sub-section" id="ascension-elements-details" open>
+      <summary>要素 <span class="step-level-req">60级开启</span><span class="arrow-toggle">▼</span></summary>
+      <div class="sub-section-content">
+       <div id="ascension-elements-list"></div>
+       <p class="empty-slot hidden" id="no-elements-msg">（尚无要素）</p>
+      </div>
+     </details>
+     <!-- 权能 -->
+     <details class="sub-section" id="ascension-authority-details" open>
+      <summary>权能 <span class="step-level-req">80级开启</span><span class="arrow-toggle">▼</span></summary>
+      <div class="sub-section-content">
+       <div id="ascension-authority-list"></div>
+       <p class="empty-slot hidden" id="no-authority-msg">（尚无权能）</p>
+      </div>
+     </details>
+     <!-- 法则 -->
+     <details class="sub-section" id="ascension-laws-details" open>
+      <summary>法则 <span class="step-level-req">90级开启</span><span class="arrow-toggle">▼</span></summary>
+      <div class="sub-section-content">
+       <div id="ascension-laws-list"></div>
+       <p class="empty-slot hidden" id="no-laws-msg">（尚无法则）</p>
+      </div>
+     </details>
+     <!-- 神位 / 神国 -->
+     <details class="sub-section" id="ascension-divinity-details" open>
+      <summary>神位 / 神国 <span class="step-level-req">100级开启</span><span class="arrow-toggle">▼</span></summary>
+      <div class="sub-section-content">
+       <div class="god-tier-grid">
+         <div>
+           <div class="step-item">
+             <span class="item-name">神位: </span>
+             <span class="value-main" id="ascension-divinity-name"></span>
+             <span class="empty-slot hidden" id="divinity-empty-slot">（尚未登临）</span>
+           </div>
+         </div>
+         <div>
+           <div class="step-item">
+             <span class="item-name">神国: </span>
+             <span class="value-main" id="ascension-kingdom-name"></span>
+             <span class="empty-slot hidden" id="kingdom-empty-slot">（尚未开辟）</span>
+           </div>
+         </div>
+       </div>
+      </div>
+     </details>
+    </div>
+   </details>
+
+   <!-- 当前任务 -->
+   <details class="section" id="tasks-section">
+    <summary>📜 当前任务 <span class="summary-details" id="tasks-summary-details"></span><span class="arrow-toggle">▼</span></summary>
+    <div class="section-content">
+     <div id="tasks-list-container"></div>
+     <p id="no-tasks-msg" class="hidden">（暂无任务）</p>
+    </div>
+   </details>
+
+   <!-- 角色信息 -->
+   <details class="section" id="character-info-section">
+    <summary>👤 角色基本信息 <span class="summary-details" id="character-summary-details"></span><span class="arrow-toggle">▼</span></summary>
+    <div class="section-content">
+
+     <!-- 角色状态 -->
+     <details class="sub-section" id="character-status-section" open>
+      <summary>📊 角色状态 <span class="summary-details" id="character-status-summary-details"></span><span class="arrow-toggle">▼</span></summary>
+      <div class="sub-section-content">
+       <!-- 资源条: HP, MP, SP, EXP -->
+       <div class="property">
+        <span class="property-name">❤️ HP:</span>
+        <span id="char-hp" class="value-main"></span> / <span id="char-hp-max" class="value-main"></span>
+        <div class="progress-bar-container"><div id="char-hp-bar" class="progress-bar-value"></div></div>
+       </div>
+       <div class="property">
+        <span class="property-name">🔮 MP:</span>
+        <span id="char-mp" class="value-main"></span> / <span id="char-mp-max" class="value-main"></span>
+        <div class="progress-bar-container"><div id="char-mp-bar" class="progress-bar-value"></div></div>
+       </div>
+       <div class="property">
+        <span class="property-name">⚡ SP:</span>
+        <span id="char-sp" class="value-main"></span> / <span id="char-sp-max" class="value-main"></span>
+        <div class="progress-bar-container"><div id="char-sp-bar" class="progress-bar-value"></div></div>
+       </div>
+       <div class="property">
+        <span class="property-name">累计经验:</span> <span id="char-exp" class="value-main"></span> /
+        <span id="char-exp-needed" class="value-main"></span>
+        <div class="progress-bar-container"><div id="char-exp-bar" class="progress-bar-value"></div></div>
+       </div>
+       <hr class="thin-divider" />
+       <!-- 状态网格布局 -->
+       <div class="status-grid">
+        <!-- 左侧：战力层级、等级、状态、身份、称号等 -->
+        <div class="status-grid-left">
+         <p><span class="property-name">⚜️ 战力层级:</span> <span id="char-power-level" class="value-main"></span></p>
+         <p><span class="property-name">✨ 等级:</span> <span id="char-level" class="value-main"></span></p>
+         <p><span class="property-name">🧬 种族:</span> <span id="char-race" class="value-main"></span></p>
+         <hr class="thin-divider" />
+         <p><span class="property-name">👑 身份:</span> <span id="char-identity" class="value-main">(无)</span></p>
+         <p><span class="property-name">🔥 冒险者等级:</span> <span id="char-adventurer-rank" class="value-main">(未评级)</span></p>
+         <p><span class="property-name">🏆 称号:</span> <span id="char-title" class="value-main">(无)</span></p>
+         <div class="title-effect">(<span id="char-title-effect" class="value-main">无</span>)</div>
+        </div>
+        <!-- 分隔线 -->
+        <div class="vertical-divider"></div>
+        <!-- 右侧：属性点和五维属性 -->
+        <div class="status-grid-right">
+         <p><span class="property-name">属性点 AP:</span> <span id="char-ap" class="value-main"></span></p>
+         <div id="ap-display-container">
+          <p><span class="property-name">💪 力量 STR:</span> <span id="char-str-display" class="value-main"></span></p>
+          <p><span class="property-name">🤸 敏捷 AGI:</span> <span id="char-agi-display" class="value-main"></span></p>
+          <p><span class="property-name">🏋️ 体质 CON:</span> <span id="char-con-display" class="value-main"></span></p>
+          <p><span class="property-name">🧠 智力 INT:</span> <span id="char-int-display" class="value-main"></span></p>
+          <p><span class="property-name">🧘 精神 SPI:</span> <span id="char-spi-display" class="value-main"></span></p>
+         </div>
+         <hr class="thin-divider" />
+         <div class="property">
+            <span class="property-name">🔘 即时状态:</span>
+            <div id="char-instant-status-container"></div>
+            <p id="no-instant-status-msg" class="value-main">(正常)</p>
+         </div>
+        </div>
+       </div>
+      </div>
+     </details>
+
+     <!-- 角色技能 -->
+     <details class="sub-section" id="character-skills-section" >
+      <summary>💫 角色技能 <span class="arrow-toggle">▼</span></summary>
+      <div class="sub-section-content" id="skills-list">
+       <details class="sub-section" id="character-passive-skills-section" >
+        <summary>📌 被动技能 <span class="arrow-toggle">▼</span></summary>
+        <div class="sub-section-content" id="passive-skills-list-container"></div>
+        <p id="no-passive-skills-msg" class="hidden">（尚未拥有任何被动技能）</p>
+       </details>
+       <hr class="thin-divider" />
+       <details class="sub-section" id="character-active-skills-section" >
+        <summary>🌀 主动技能 <span class="arrow-toggle">▼</span></summary>
+        <div class="sub-section-content" id="active-skills-list-container"></div>
+        <p id="no-active-skills-msg" class="hidden">（尚未习得任何主动技能）</p>
+       </details>
+      </div>
+     </details>
+
+      <!-- 角色装备 -->
+      <details class="sub-section" id="character-equipment-section" >
+        <summary>⚔️ 角色装备 <span class="arrow-toggle">▼</span></summary>
+        <div class="sub-section-content" id="equipment-list-container"></div>
+        <p id="no-equipment-msg" class="hidden">（未装备任何物品）</p>
+      </details>
+
+    </div>
+   </details>
+
+   <!-- 角色背包 -->
+   <details class="section" id="character-inventory-section">
+    <summary>🎒 角色背包 <span class="summary-details" id="inventory-summary-details"></span><span class="arrow-toggle">▼</span></summary>
+    <div class="section-content">
+     <div class="inventory-category">
+      <p class="property-name">💰 货币:</p>
+      <p class="currency-item">💠 白金币: <span id="currency-platinum" class="value-main">0</span></p>
+      <p class="currency-item">🟡 金币: <span id="currency-gold" class="value-main">0</span></p>
+      <p class="currency-item">⚪ 银币: <span id="currency-silver" class="value-main">0</span></p>
+      <p class="currency-item">🟤 铜币: <span id="currency-copper" class="value-main">0</span></p>
+     </div>
+     <hr class="thin-divider" />
+     <div class="inventory-category">
+      <p class="property-name">📦 物品列表:</p>
+      <details class="sub-section" >
+       <summary>🗡️ 武器防具<span id="inventory-equipment-count" class="item-count-badge"></span><span class="arrow-toggle">▼</span></summary>
+       <div class="sub-section-content">
+        <div id="inventory-equipment-container"></div>
+        <p id="no-inventory-equipment-msg" class="hidden">（无）</p>
+       </div>
+      </details>
+      <details class="sub-section" >
+       <summary>🧪 消耗品<span id="inventory-consumables-count" class="item-count-badge"></span><span class="arrow-toggle">▼</span></summary>
+       <div class="sub-section-content">
+        <div id="inventory-consumables-container"></div>
+        <p id="no-consumables-msg" class="hidden">（无）</p>
+       </div>
+      </details>
+      <details class="sub-section" >
+       <summary>🌿 材料<span id="inventory-materials-count" class="item-count-badge"></span><span class="arrow-toggle">▼</span></summary>
+       <div class="sub-section-content">
+        <div id="inventory-materials-container"></div>
+        <p id="no-materials-msg" class="hidden">（无）</p>
+       </div>
+      </details>
+      <details class="sub-section" >
+       <summary>🎁 其它物品<span id="inventory-others-count" class="item-count-badge"></span><span class="arrow-toggle">▼</span></summary>
+       <div class="sub-section-content">
+        <div id="inventory-others-container"></div>
+        <p id="no-others-msg" class="hidden">（无）</p>
+       </div>
+      </details>
+     </div>
+    </div>
+   </details>
+
+   <!-- 命运红线 -->
+   <details class="section" id="destiny-section">
+    <summary>💞 命运红线 <span class="summary-details" id="destiny-summary-details"></span><span class="arrow-toggle">▼</span></summary>
+    <div class="section-content">
+     <button id="system-shop-btn" class="action-button">系统商店</button>
+     <p><span class="property-name">💖 命运点数 FP:</span> <span id="destiny-fp" class="value-main">0</span></p>
+     <div id="destiny-targets-container"></div>
+     <p id="no-destiny-targets-msg" class="hidden">（尚未与任何人缔结深刻的命运联系）</p>
+    </div>
+   </details>
+
+   <!-- 每日见闻 -->
+   <details class="section" id="news-section">
+    <summary>🌍 每日见闻 <span class="arrow-toggle">▼</span></summary>
+    <div class="section-content">
+     <button id="update-news-btn" class="action-button">更新见闻</button>
+     <details class="sub-section" id="news-gold-lion-section" open>
+      <summary><span class="news-headline news-gold-lion">🦁 金狮快讯</span><span class="arrow-toggle">▼</span></summary>
+      <div class="sub-section-content"><p id="news-gold-lion-text">（暂无最新快讯）</p></div>
+     </details>
+     <details class="sub-section" id="news-tavern-section" open>
+      <summary><span class="news-headline news-tavern">🍻 酒馆留言板</span><span class="arrow-toggle">▼</span></summary>
+      <div class="sub-section-content"><p id="news-tavern-text">（留言板上空空如也）</p></div>
+     </details>
+     <details class="sub-section" id="news-tea-party-section" open>
+      <summary><span class="news-headline news-tea-party">☕ 系统助手的午后茶会</span><span class="arrow-toggle">▼</span></summary>
+      <div class="sub-section-content"><p id="news-tea-party-text">（茶会上没什么新八卦）</p></div>
+     </details>
+    </div>
+   </details>
+  </div>
+
+  <script>
+   // --- 辅助工具函数 ---
+   function SafeGetValue(obj, path, defaultValue = '') {
+    try {
+     const value = path.split('.').reduce((o, k) => (o && o[k] !== 'undefined' ? o[k] : undefined), obj);
+     if (Array.isArray(value) && value.length > 0) {
+      const firstEl = value[0];
+      if(Object.keys(firstEl).length === 2 && 'v' in firstEl && 'd' in firstEl){
+          return firstEl.v;
+      }
+      return firstEl;
+     }
+     return value ?? defaultValue;
+    } catch(e) {
+     return defaultValue;
+    }
+   }
+
+   function updateProgressBar(barId, currentValue, maxValue, color = '#785A4E') {
+    const progressBar = document.getElementById(barId);
+    if (progressBar) {
+     const current = parseFloat(currentValue) || 0;
+     const max = parseFloat(maxValue) || 1;
+     const percentage = Math.max(0, Math.min(100, (current / max) * 100));
+     progressBar.style.width = `${percentage}%`;
+     progressBar.style.backgroundColor = color;
+    }
+   }
+
+   function setElementText(id, value, emptyValue = '') {
+    const el = document.getElementById(id);
+    if (el) el.innerText = (value === null || value === undefined || String(value).trim() === '') ? emptyValue : String(value).trim();
+   }
+
+   function setElementHTML(id, value, emptyValue = '') {
+    const el = document.getElementById(id);
+    if (el) {
+     const finalValue = (value === null || value === undefined || String(value).trim() === '') ? emptyValue : String(value).trim();
+     el.innerHTML = finalValue.replace(/\n/g, '<br />');
+    }
+   }
+
+   function toggleElementVisibility(elementId, show) {
+    document.getElementById(elementId)?.classList.toggle('hidden', !show);
+   }
+
+    function setupCollapsibles() {
+        document.querySelectorAll('details.section').forEach(details => {
+            details.open = false;
+        });
+
+        document.querySelectorAll('details > summary').forEach(summary => {
+            const arrow = summary.querySelector('.arrow-toggle');
+            if (arrow && !summary.dataset.listenerAttached) {
+                summary.dataset.listenerAttached = 'true';
+                summary.addEventListener('click', (event) => {
+                    const detailsElement = summary.parentElement;
+                    setTimeout(() => {
+                        arrow.style.transform = detailsElement.open ? 'rotate(90deg)' : '';
+                    }, 0);
+                });
+                const detailsElement = summary.parentElement;
+                setTimeout(() => {
+                    arrow.style.transform = detailsElement.open ? 'rotate(90deg)' : '';
+                }, 0);
+            }
+        });
+    }
+
+   // --- 数据更新函数 ---
+    function updateWorldState(data) {
+        setElementText('world-time', SafeGetValue(data, '世界.时间', '未知时间'));
+        setElementText('world-location', SafeGetValue(data, '世界.地点', '未知地点'));
+    }
+
+   function updateAscensionLadder(data) {
+        const ascensionData = SafeGetValue(data, '登神长阶', {});
+        const isAscensionOpen = SafeGetValue(ascensionData, '是否开启') === '是';
+        const userLevel = parseInt(SafeGetValue(data, '角色.状态.等级', '1'), 10);
+
+        toggleElementVisibility('ascension-section', isAscensionOpen);
+
+        if (!isAscensionOpen) return;
+
+        const createStepItemHTML = (items, placeholderMsg) => {
+            if (!items || typeof items !== 'object' || Object.keys(items).filter(k => k !== '$meta').length === 0) {
+                return `<p class="empty-slot">${placeholderMsg}</p>`;
+            }
+            return Object.keys(items).filter(key => key !== '$meta').map(key => {
+                const item = items[key];
+                return `<div class="step-item"><span class="item-name">❖ ${SafeGetValue(item, '名称', key)}:</span><span class="item-desc">${SafeGetValue(item, '描述', '无描述')}</span></div>`;
+            }).join('');
+        };
+
+        const elements = SafeGetValue(ascensionData, '要素', {});
+        document.getElementById('ascension-elements-list').innerHTML = createStepItemHTML(elements, '（尚无要素）');
+
+        const authorities = SafeGetValue(ascensionData, '权能', {});
+        document.getElementById('ascension-authority-list').innerHTML = createStepItemHTML(authorities, '（尚无权能）');
+
+        const laws = SafeGetValue(ascensionData, '法则', {});
+        document.getElementById('ascension-laws-list').innerHTML = createStepItemHTML(laws, '（尚无法则）');
+
+        const divinity = SafeGetValue(ascensionData, '神位', {});
+        const divinityName = Object.keys(divinity).filter(k => k !== '$meta')[0] || '';
+        const kingdom = SafeGetValue(ascensionData, '神国', {});
+        const kingdomName = kingdom[Object.keys(kingdom).filter(k => k !== '$meta')[0]]?.名称 || '';
+
+        setElementText('ascension-divinity-name', divinityName);
+        toggleElementVisibility('divinity-empty-slot', !divinityName);
+
+        setElementText('ascension-kingdom-name', kingdomName);
+        toggleElementVisibility('kingdom-empty-slot', !kingdomName);
+
+        let summaryText = '长阶已启';
+        if (divinityName) summaryText = `已登神: ${divinityName}`;
+        else if (Object.keys(laws).filter(k => k !== '$meta').length > 0) summaryText = `当前阶段: 法则`;
+        else if (Object.keys(authorities).filter(k => k !== '$meta').length > 0) summaryText = `当前阶段: 权能`;
+        else if (Object.keys(elements).filter(k => k !== '$meta').length > 0) summaryText = `当前阶段: 要素`;
+        setElementText('ascension-summary-details', summaryText);
+
+        document.getElementById('ascension-elements-details').classList.toggle('locked', userLevel < 60);
+        document.getElementById('ascension-authority-details').classList.toggle('locked', userLevel < 80);
+        document.getElementById('ascension-laws-details').classList.toggle('locked', userLevel < 90);
+        document.getElementById('ascension-divinity-details').classList.toggle('locked', userLevel < 100);
+   }
+
+
+   function updateTasks(data) {
+        const taskList = SafeGetValue(data, '任务列表', {});
+        const container = document.getElementById('tasks-list-container');
+        container.innerHTML = '';
+
+        const taskKeys = Object.keys(taskList).filter(key => key !== '$meta' && taskList[key] && taskList[key]['标题']);
+
+        taskKeys.forEach(key => {
+            const task = taskList[key];
+            const title = SafeGetValue(task, '标题', '无标题任务');
+            const intro = SafeGetValue(task, '简介', '无');
+            const target = SafeGetValue(task, '目标', '无');
+            const reward = SafeGetValue(task, '奖励', '无');
+
+            const taskHtml = `<details class="task-entry" open>
+                                <summary>🚩 <span class="value-main">${title}</span> <span class="arrow-toggle">▼</span></summary>
+                                <div class="task-content">
+                                    <p>📖 简介: <span class="value-main">${intro}</span></p>
+                                    <p>🎯 目标: <span class="value-main">${target}</span></p>
+                                    <p>🏆 奖励: <span class="value-main">${reward}</span></p>
+                                </div>
+                              </details>`;
+            container.innerHTML += taskHtml;
+        });
+
+        setElementText('tasks-summary-details', `进行中: ${taskKeys.length}个`);
+        toggleElementVisibility('no-tasks-msg', taskKeys.length === 0);
+   }
+
+   function updateCharacterResources(data) {
+        const paths = {
+            hp: { current: '角色.资源.生命值', max: '角色.资源.生命值上限', color: '#D32F2F' },
+            mp: { current: '角色.资源.法力值', max: '角色.资源.法力值上限', color: '#1976D2' },
+            sp: { current: '角色.资源.体力值', max: '角色.资源.体力值上限', color: '#388E3C' },
+            exp: { current: '角色.状态.累计经验值', max: '角色.状态.升级所需经验', color: '#FFA000' }
+        };
+
+        for (const [key, p] of Object.entries(paths)) {
+            const current = SafeGetValue(data, p.current, '0');
+            const max = SafeGetValue(data, p.max, '1');
+            setElementText(`char-${key}`, current);
+            setElementText(`char-${key}-${key === 'exp' ? 'needed' : 'max'}`, max);
+            updateProgressBar(`char-${key}-bar`, current, max, p.color);
+        }
+   }
+
+   function updateCharacterStatus(data) {
+        setElementText('char-power-level', SafeGetValue(data, '角色.状态.战力层级', '未知'));
+        setElementText('char-level', SafeGetValue(data, '角色.状态.等级', '1'));
+        setElementText('char-race', SafeGetValue(data, '角色.种族', '未知'));
+        setElementText('char-identity', SafeGetValue(data, '角色.状态.身份', '无'));
+        setElementText('char-adventurer-rank', SafeGetValue(data, '角色.状态.冒险者等级', '未评级'));
+        setElementText('char-title', SafeGetValue(data, '角色.状态.称号', '无'));
+        setElementText('char-title-effect', SafeGetValue(data, '角色.状态.称号效果', '无'));
+
+        const statusObj = SafeGetValue(data, '角色.状态.即时状态', {});
+        const statusContainer = document.getElementById('char-instant-status-container');
+        statusContainer.innerHTML = '';
+        const statusKeys = Object.keys(statusObj).filter(key => key !== '$meta' && statusObj[key] && SafeGetValue(statusObj[key], '名称'));
+
+        statusKeys.forEach(key => {
+            const s = statusObj[key];
+            let text = `<span class="status-name">${SafeGetValue(s, '名称', key)}</span>`;
+            if (SafeGetValue(s, '效果')) text += `: ${SafeGetValue(s, '效果')}`;
+            if (SafeGetValue(s, '持续')) text += ` (${SafeGetValue(s, '持续')})`;
+            statusContainer.innerHTML += `<p class="instant-status-item">- ${text}</p>`;
+        });
+
+        toggleElementVisibility('no-instant-status-msg', statusKeys.length === 0);
+   }
+
+   function updateCharacterAttributes(data) {
+        setElementText('char-ap', SafeGetValue(data, '角色.属性.属性点', '0'));
+        const statIds = { '力量': 'str', '敏捷': 'agi', '体质': 'con', '智力': 'int', '精神': 'spi' };
+        for(const [stat, id] of Object.entries(statIds)){
+            setElementText(`char-${id}-display`, SafeGetValue(data, `角色.属性.${stat}`, '0'));
+        }
+   }
+
+    function updateSkills(data) {
+        const skillList = SafeGetValue(data, '技能列表', {});
+        const passiveContainer = document.getElementById('passive-skills-list-container');
+        const activeContainer = document.getElementById('active-skills-list-container');
+        passiveContainer.innerHTML = '';
+        activeContainer.innerHTML = '';
+
+        const skillKeys = Object.keys(skillList).filter(key => key !== '$meta' && skillList[key] && SafeGetValue(skillList[key], '名称'));
+
+        let passiveCount = 0;
+        let activeCount = 0;
+
+        skillKeys.forEach(key => {
+            const s = skillList[key];
+            const name = SafeGetValue(s, '名称');
+            const quality = SafeGetValue(s, '品质', '普通');
+            const desc = SafeGetValue(s, '描述');
+
+            if (SafeGetValue(s, '类型') === '被动') {
+                passiveContainer.innerHTML += `<details class="skill-entry" open><summary><span class="value-main">${name} (${quality})</span> <span class="arrow-toggle">▼</span></summary><div class="skill-description">${desc}</div></details>`;
+                passiveCount++;
+            } else {
+                const cost = SafeGetValue(s, '消耗', '无');
+                activeContainer.innerHTML += `<details class="skill-entry" open><summary><span class="value-main">${name} (${quality}) | ${cost}</span> <span class="arrow-toggle">▼</span></summary><div class="skill-description">${desc}</div></details>`;
+                activeCount++;
+            }
+        });
+
+        toggleElementVisibility('no-passive-skills-msg', passiveCount === 0);
+        toggleElementVisibility('no-active-skills-msg', activeCount === 0);
+    }
+
+   function updateEquipment(data) {
+        const equipmentObj = SafeGetValue(data, '财产.装备', {});
+        const container = document.getElementById('equipment-list-container');
+        container.innerHTML = '';
+        const equipKeys = Object.keys(equipmentObj).filter(key => key !== '$meta' && equipmentObj[key] && SafeGetValue(equipmentObj[key], '名称'));
+
+        equipKeys.forEach(key => {
+            const item = equipmentObj[key];
+            container.innerHTML += `<div class="equipment-item"><p class="property-name">${SafeGetValue(item, '部位')}: ${SafeGetValue(item, '名称')}(${SafeGetValue(item, '品质')})</p><div class="item-desc">${SafeGetValue(item, '描述')}</div></div>`;
+        });
+
+        toggleElementVisibility('no-equipment-msg', equipKeys.length === 0);
+   }
+
+   function updateInventory(data) {
+        const currency = SafeGetValue(data, '财产.货币', {});
+        setElementText('currency-platinum', SafeGetValue(currency, '白金币', '0'));
+        setElementText('currency-gold', SafeGetValue(currency, '金币', '0'));
+        setElementText('currency-silver', SafeGetValue(currency, '银币', '0'));
+        setElementText('currency-copper', SafeGetValue(currency, '铜币', '0'));
+        setElementText('inventory-summary-details', `白金币:${SafeGetValue(currency, '白金币','0')} 金:${SafeGetValue(currency, '金币','0')} 银:${SafeGetValue(currency, '银币','0')} 铜:${SafeGetValue(currency, '铜币','0')}`);
+
+        const inventory = SafeGetValue(data, '财产.背包', {});
+        const itemKeys = Object.keys(inventory).filter(key => key !== '$meta' && inventory[key] && SafeGetValue(inventory[key], '名称'));
+
+        const categories = { consumables: [], equipment: [], materials: [], others: [] };
+        itemKeys.forEach(key => {
+            const item = inventory[key];
+            const type = SafeGetValue(item, '类型', '其它物品');
+            if (type === '消耗品') categories.consumables.push(item);
+            else if (['武器', '防具', '饰品'].includes(type)) categories.equipment.push(item);
+            else if (type === '材料') categories.materials.push(item);
+            else categories.others.push(item);
+        });
+
+        const createItemHtml = (items) => items.map(i => `<details class="inventory-item-entry" open><summary><span class="value-main">${SafeGetValue(i, '名称')}(${SafeGetValue(i, '品质','普通')}) | ${SafeGetValue(i, '数量', '1')}</span><span class="arrow-toggle">▼</span></summary><div class="inventory-item-details"><p><span class="property-name">类型:</span> ${SafeGetValue(i, '类型')}</p><p><span class="property-name">描述:</span> ${SafeGetValue(i, '描述')}</p></div></details>`).join('');
+
+        ['equipment', 'consumables', 'materials', 'others'].forEach(cat => {
+            const container = document.getElementById(`inventory-${cat}-container`);
+            container.innerHTML = createItemHtml(categories[cat]);
+            document.getElementById(`inventory-${cat}-count`).textContent = categories[cat].length > 0 ? categories[cat].length : '';
+            toggleElementVisibility(`no-${cat === 'equipment' ? 'inventory-equipment' : cat}-msg`, categories[cat].length === 0);
+        });
+   }
+
+   function updateDestinySystem(data) {
+        const destinyData = SafeGetValue(data, '命运系统', {});
+        setElementText('destiny-fp', SafeGetValue(destinyData, '命运点数', '0'));
+
+        const targets = SafeGetValue(destinyData, '红线对象', {});
+        const container = document.getElementById('destiny-targets-container');
+        container.innerHTML = '';
+        const targetKeys = Object.keys(targets).filter(key => key !== '$meta' && targets[key] && SafeGetValue(targets[key], '名称'));
+
+        const barsToUpdate = [];
+        targetKeys.forEach(key => {
+            const char = targets[key];
+            const barId = `destiny-target-${key.replace(/\s+/g, '-')}-affection-bar`;
+            container.innerHTML += createDestinyTargetHTML(char, barId);
+            barsToUpdate.push({ barId: barId, current: parseInt(SafeGetValue(char, '好感度', '0'), 10), max: 1000 });
+        });
+
+        setElementText('destiny-summary-details', `FP: ${SafeGetValue(destinyData, '命运点数','0')} | 红线: ${targetKeys.length}人`);
+        toggleElementVisibility('no-destiny-targets-msg', targetKeys.length === 0);
+        barsToUpdate.forEach(b => updateProgressBar(b.barId, b.current, b.max, '#EC407A'));
+   }
+
+   function createDestinyTargetHTML(character, barId) {
+        const createRow = (emoji, label, valuePath, defaultValue = '未知') => {
+            const value = SafeGetValue(character, valuePath, defaultValue);
+            if (value === null || value === '未知' || String(value).trim() === '') {
+                return ''; // 如果值为空、未知或空白，则不渲染该行
+            }
+            return `<p><span class="property-name">${emoji} ${label}:</span> <span class="value-main">${value}</span></p>`;
+        }
+        const name = SafeGetValue(character, '名称');
+        const isTied = SafeGetValue(character, '是否缔结红线', '否') === '是';
+
+        return `<details class="destiny-target" open>
+                    <summary><span class="value-main">${name}</span> <span class="arrow-toggle">▼</span></summary>
+                    <div class="destiny-target-content">
+                        ${createRow('⚜️', '战力层级', '战力层级')}
+                        ${createRow('✨', '等级', '等级', '1')}
+                        ${createRow('🧬', '种族', '种族')}
+                        ${createRow('👑', '身份', '身份', '无')}
+                        ${createRow('⚖️', '职业', '职业', '无')}
+                        ${createRow('🎭', '性格', '性格')}
+                        ${createRow('💖', '喜爱', '喜爱')}
+                        ${createRow('🌸', '外貌特质', '外貌特质')}
+                        ${createRow('👗', '衣物装饰', '衣物装饰')}
+                        ${createRow('⚔️', '角色装备', '角色装备', '无')}
+                        <hr class="thin-divider">
+                        <p><span class="property-name">🪢 是否缔结红线:</span> <span class="value-main">${isTied ? '是' : '否'}</span></p>
+                        <p><span class="property-name">❤️ 好感度:</span> <span class="value-main">${SafeGetValue(character, '好感度', '0')} / 1000</span></p>
+                        <div class="progress-bar-container"><div id="${barId}" class="progress-bar-value"></div></div>
+                        <p><span class="property-name">💭 评价:</span> <span class="value-main">${SafeGetValue(character, '评价', '（暂无评价）')}</span></p>
+                        ${createRow('♾️', '登神长阶', '登神长阶', '未开启')}
+                        ${createRow('📜', '背景故事', '背景故事', '暂无')}
+                    </div>
+                </details>`;
+   }
+
+   function updateNews(data) {
+        const newsData = SafeGetValue(data, '每日见闻', {});
+        setElementHTML('news-gold-lion-text', SafeGetValue(newsData, '金狮快讯', '').replace(/\|/g, '<br>'), '（暂无最新快讯）');
+        setElementHTML('news-tavern-text', SafeGetValue(newsData, '酒馆留言板', '').replace(/\|/g, '<br>'), '（留言板上空空如也）');
+        setElementHTML('news-tea-party-text', SafeGetValue(newsData, '系统助手的午后茶会', '').replace(/\|/g, '<br>'), '（茶会上没什么新八卦）');
+   }
+
+   function updateAllSummaryDetails(data){
+       const summaryText = `${SafeGetValue(data, '角色.状态.战力层级','未知')} | Lv.${SafeGetValue(data, '角色.状态.等级', '1')} | ${SafeGetValue(data, '角色.状态.称号','无称号')}`;
+       setElementText('character-summary-details', summaryText);
+
+       const hp = `${SafeGetValue(data,'角色.资源.生命值','0')}/${SafeGetValue(data,'角色.资源.生命值上限','0')}`;
+       const mp = `${SafeGetValue(data,'角色.资源.法力值','0')}/${SafeGetValue(data,'角色.资源.法力值上限','0')}`;
+       const sp = `${SafeGetValue(data,'角色.资源.体力值','0')}/${SafeGetValue(data,'角色.资源.体力值上限','0')}`;
+       setElementText('character-status-summary-details', `HP: ${hp} | MP: ${mp} | SP: ${sp}`);
+   }
+
+
+   function setupStaticEventListeners() {
+    const shopButton = document.getElementById('system-shop-btn');
+    if (shopButton && !shopButton.dataset.listenerAttached) {
+      shopButton.addEventListener('click', () => {
+        if (typeof triggerSlash === 'function') triggerSlash('/send 打开系统商店|/trigger');
+      });
+      shopButton.dataset.listenerAttached = 'true';
+    }
+    const newsButton = document.getElementById('update-news-btn');
+    if (newsButton && !newsButton.dataset.listenerAttached) {
+      newsButton.addEventListener('click', () => {
+         if (typeof triggerSlash === 'function') triggerSlash('/send 更新每日见闻|/trigger');
+      });
+      newsButton.dataset.listenerAttached = 'true';
+    }
+   }
+
+   // --- 主初始化函数 ---
+   async function initDisplay() {
+    try {
+     const messages = await getChatMessages(getCurrentMessageId());
+     const latestMessage = messages && messages.length > 0 ? messages[messages.length - 1] : null;
+     const characterData = latestMessage?.data?.stat_data;
+
+     if (!characterData) {
+      console.error('状态栏加载失败: 找不到 stat_data。');
+      return;
+     }
+
+     updateWorldState(characterData);
+     updateAscensionLadder(characterData);
+     updateTasks(characterData);
+     updateCharacterResources(characterData);
+     updateCharacterStatus(characterData);
+     updateCharacterAttributes(characterData);
+     updateSkills(characterData);
+     updateEquipment(characterData);
+     updateInventory(characterData);
+     updateDestinySystem(characterData);
+     updateNews(characterData);
+     updateAllSummaryDetails(characterData);
+
+     setupStaticEventListeners();
+     setupCollapsibles();
+
+    } catch (error) {
+     console.error('状态栏加载时发生严重错误:', error);
+     document.body.innerHTML = `<p style='color:red; padding:20px; text-align:center;'>状态栏加载失败！ Error: ${error.message}</p>`;
+    }
+   }
+
+   document.addEventListener('DOMContentLoaded', initDisplay);
+  </script>
+ </body>
+</html>
+```
