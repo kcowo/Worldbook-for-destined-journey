@@ -37,7 +37,7 @@ general_type&check:
       累计经验值: number. <user>获得的经验值
       升级所需经验: *readonly
       即时状态:
-        description: object. <user>拥有的 buff 和 debuff 列表，每个 buff 为一个对象，随故事进展变化。可以添加或删除 buff 或 debuff（即增删键值对，buff更新模板在'variables_update_format'中，添加 buff 时需严格遵守buff更新模板）
+        description: object. <user>拥有的 buff 和 debuff 列表，每个 buff 为一个对象，随故事进展变化。可以添加或删除 buff 或 debuff（即增删键值对，buff更新模板在'variables_update_format'中，添加 buff 时需严格遵守buff更新模板）。当 buff 持续时长结束时，需直接删除该 buff
         buff: &buff
           名称: string. 即时状态的名称
           效果: string. 即时状态的效果
