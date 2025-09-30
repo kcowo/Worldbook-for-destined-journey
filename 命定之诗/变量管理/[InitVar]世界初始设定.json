@@ -13,7 +13,6 @@
     "$meta": {
       "extensible": true,
       "template": {
-        "标题": "",
         "简介": "",
         "目标": "",
         "奖励": ""
@@ -21,12 +20,16 @@
     }
   },
   "角色": {
-    "$meta": { "extensible": false },
+    "$meta": {
+      "extensible": false
+    },
     "种族": "",
     "身份": ["$__META_EXTENSIBLE__$"],
     "职业": ["$__META_EXTENSIBLE__$"],
     "状态": {
-      "$meta": { "extensible": false },
+      "$meta": {
+        "extensible": false
+      },
       "生命层级": "第一层级/普通层级",
       "等级": 1,
       "累计经验值": 0,
@@ -35,7 +38,6 @@
         "$meta": {
           "extensible": true,
           "template": {
-            "名称": "",
             "效果": "",
             "持续": ""
           }
@@ -46,7 +48,9 @@
       "称号效果": ""
     },
     "属性": {
-      "$meta": { "extensible": false },
+      "$meta": {
+        "extensible": false
+      },
       "力量": 0,
       "敏捷": 0,
       "体质": 0,
@@ -55,7 +59,9 @@
       "属性点": 0
     },
     "资源": {
-      "$meta": { "extensible": false },
+      "$meta": {
+        "extensible": false
+      },
       "生命值上限": 0,
       "生命值": 0,
       "法力值上限": 0,
@@ -68,7 +74,6 @@
     "$meta": {
       "extensible": true,
       "template": {
-        "名称": "",
         "品质": "",
         "消耗": "",
         "描述": "",
@@ -81,7 +86,6 @@
       "$meta": {
         "extensible": true,
         "template": {
-          "道具名": "",
           "品质": "",
           "数量": 1,
           "类型": "",
@@ -90,14 +94,18 @@
       }
     },
     "货币": {
-      "$meta": { "extensible": false },
+      "$meta": {
+        "extensible": false
+      },
       "白金币": 0,
       "金币": 0,
       "银币": 0,
       "铜币": 0
     },
     "装备": {
-      "$meta": { "extensible": false },
+      "$meta": {
+        "extensible": false
+      },
       "主武器": {
         "名称": "无装备",
         "品质": "",
@@ -141,51 +149,44 @@
     }
   },
   "登神长阶": {
-    "$meta": { "extensible": false },
+    "$meta": {
+      "extensible": false
+    },
     "是否开启": "否",
     "要素": {
       "$meta": {
-        "extensible": true,
-        "template": {
-          "名称": "",
-          "描述": ""
-        }
+        "extensible": true
       }
     },
     "权能": {
       "$meta": {
-        "extensible": true,
-        "template": {
-          "名称": "",
-          "描述": ""
-        }
+        "extensible": true
       }
     },
     "法则": {
       "$meta": {
-        "extensible": true,
-        "template": {
-          "名称": "",
-          "描述": ""
-        }
+        "extensible": true
       }
     },
     "神位": "",
     "神国": {
-      "$meta": { "extensible": false },
+      "$meta": {
+        "extensible": false
+      },
       "名称": "",
       "描述": ""
     }
   },
   "命运系统": {
-    "$meta": { "extensible": false },
+    "$meta": {
+      "extensible": false
+    },
     "命运点数": 0,
     "红线对象": {
       "$meta": {
         "extensible": true,
         "template": {
-          "名称": "",
-          "战力层级": "",
+          "生命层级": "",
           "等级": 1,
           "种族": "",
           "身份": ["$__META_EXTENSIBLE__$"],
@@ -201,13 +202,8 @@
           "评价": "",
           "背景故事": "",
           "羁绊技能": {
-            "主动": {
-              "名称": "",
-              "效果": ""
-            },
-            "被动": {
-              "名称": "",
-              "效果": ""
+            "$meta": {
+              "extensible": true
             }
           }
         }
@@ -215,7 +211,9 @@
     }
   },
   "每日新闻": {
-    "$meta": { "extensible": false },
+    "$meta": {
+      "extensible": false
+    },
     "阿斯塔利亚快讯": "",
     "酒馆留言板": "",
     "红线助手的午后茶会": ""
