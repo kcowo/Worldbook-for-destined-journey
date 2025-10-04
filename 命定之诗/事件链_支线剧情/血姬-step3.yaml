@@ -1,5 +1,5 @@
 <event_chain>
-<% if ({{roll 1d100}} + {{get_message_variable::stat_data.角色.状态.等级}} >= 100) { %>
+<% if ({{roll 1d100}} >= 100) { %>
 罕见事件!{{user}}战胜了赫卡忒。事件链结束, 你需要在本轮的<UpdateVariable>中_.set('事件链.结束','true');
 <% } else { %>
 这场战斗{{user}}必败无疑
