@@ -55,7 +55,7 @@ general_type&check:
       体力值上限: *maximum
       体力值: *actual_value
   技能列表:
-    description: object. 当前<user>拥有的技能列表，每个技能为一个对象，对象的键名(key)即为技能名称，随故事进展变化。仅可以添加技能（技能更新模板在'variables_update_format'中，添加技能时需严格遵守技能更新模板）
+    description: object. 当前<user>拥有的技能列表，每个技能为一个对象，对象的键名(key)即为技能名称，随故事进展变化。仅可以添加技能（技能更新模板在'variables_update_format'中，添加技能时需严格遵守技能更新模板）。技能名称中不要附带品质说明
     skill_name: &skill
       品质: string. 技能的品质，分为普通、优良、稀有、史诗、传说、神话
       消耗: string. 使用技能的消耗
@@ -65,7 +65,7 @@ general_type&check:
       <<: *skill
   财产:
     背包:
-      description: object. 当前<user>背包中的物品列表，每个物品为一个对象，对象的键名(key)即为物品名称，随故事进展变化。可以添加或删除物品（即增删键值对，物品更新模板在'variables_update_format'中，添加物品时需严格遵守物品更新模板）。某个物品数量变为0时需直接删除该物品
+      description: object. 当前<user>背包中的物品列表，每个物品为一个对象，对象的键名(key)即为物品名称，随故事进展变化。可以添加或删除物品（即增删键值对，物品更新模板在'variables_update_format'中，添加物品时需严格遵守物品更新模板）。物品名称中不要附带品质说明。某个物品数量变为0时需直接删除该物品
       item_name: &item
         品质: string. 物品的品质
         数量: number. 物品的数量
