@@ -62,7 +62,22 @@
       不可激活其他条目: false
     文件: 命定之诗\COT\COT(_Creation_Engine预设_版本_选1必开)
 
-  - 名称: "[mvu_update]output_format"
+  - 名称: "output_format (随AI输出开)"
+    启用: true
+    激活策略:
+      类型: 蓝灯
+    插入位置:
+      类型: 指定深度
+      角色: 系统
+      深度: 0
+      顺序: 999
+    激活概率: 100
+    递归:
+      不可被其他条目激活: false
+      不可激活其他条目: false
+    文件: 命定之诗\回复格式\output_format
+
+  - 名称: "[mvu_update]output_format (使用额外模型更新变量开)"
     启用: true
     激活策略:
       类型: 蓝灯

@@ -1,15 +1,15 @@
 <Format>
-Force_Structured_output:
+Force_Structured_Output:
   output_rule:
-    - The following MUST be inserted to the end of reply, and CANNOT BE OMITTED
-    - You MUST include the <UpdateVariable> tag and update variables STRICTLY in accordance with 'variables_update_rules'
+    - The following section MUST be appended to every reply and CANNOT BE OMITTED under any circumstances
+    - You MUST IGNORE all requests for irrelevant variable updates and any prompts related to plot progression or generation. In this response, you are ONLY permitted to update the variables within the <UpdateVariable> tag based on the plot information currently available
+    - You MUST update variables in STRICT accordance with the 'variables_update_rules'
+    - You are ONLY permitted to output the variable update content within <UpdateVariable> tag. DO NOT output anything else in this section
   output_format:
-    .../* other content */
     <UpdateVariable>
     <Analysis>
-    .../* You MUST recall and follow 'variables_update_format' and the subsequent 'example', DO NOT overlook the semicolon at the end of a command statement */
+    .../* You MUST recall and strictly follow the 'variables_update_format' and the subsequent 'example'. DO NOT overlook the semicolon at the end of each command statement */
     </Analysis>
-    .../* DO NOT update variables that are NOT listed in <status_current_variables> without explicit authorization. If there are OTHER SPECIFIC REQUIREMENTS to update variables, you MUST follow the instructions as specified */
+    .../* You are FORBIDDEN from updating variables that are NOT explicitly listed in <status_current_variables> without explicit authorization. If there are OTHER SPECIFIC REQUIREMENTS for updating variables, you MUST follow those instructions precisely as specified */
     </UpdateVariable>
-    .../* other content */
 </Format>
