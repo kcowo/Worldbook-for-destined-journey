@@ -2698,7 +2698,7 @@
       使用评分: false
     文件: 命定之诗\事件链\血姬\血姬-step7-end
 
-  - 名称: hecate_info
+  - 名称: Liliyas_info
     启用: true
     激活策略:
       类型: 绿灯
@@ -2716,4 +2716,4 @@
       组标签:
         - ""
       使用评分: false
-    文件: 命定之诗\事件链\血姬\hecate_info
+    文件: 命定之诗\事件链\血姬\Liliyas_info
