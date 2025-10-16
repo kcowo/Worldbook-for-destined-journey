@@ -1,6 +1,10 @@
-# WorldBook - 命定之诗与黄昏之歌
+# 请先查看具体的使用教程 → [使用教程](./docs/DOC.md)
 
-# 请先查看具体的使用教程 → [使用教程](./DOC.md)
+## WorldBook - 命定之诗与黄昏之歌
+
+## 更新日志
+
+### 请查看 [提交记录](https://github.com/Hilothea/Worldbook-for-destined-journey/commits/main/)
 
 ## 概述
 
