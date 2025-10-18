@@ -74,7 +74,6 @@ general_type&check:
       "{物品名称}":
         <<: *item
     货币:
-      白金币: number. 白金币数量
       金币: number. 金币数量
       银币: number. 银币数量
       铜币: number. 铜币数量
